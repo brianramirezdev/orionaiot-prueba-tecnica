@@ -7,5 +7,8 @@ dist-ssr
 .claude
 .remember
 
+# Enunciado de la prueba: se queda en local, no se sube al repo
+/PRUEBA DE ReactJs PROGRAMADOR WEB.pdf
+
 *.log
 .DS_Store

@@ -25,3 +25,11 @@ export function updateMarker(id, { description, lat, lng }) {
   marker.lng = lng;
   return marker;
 }
+
+export function deleteMarker(id) {
+  const index = markers.findIndex((item) => item.id === id);
+  if (index === -1) return false;
+
+  markers.splice(index, 1);
+  return true;
+}

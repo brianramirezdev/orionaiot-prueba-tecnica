@@ -18,3 +18,7 @@ export function createMarker(input: MarkerInput) {
 export function updateMarker(id: string, input: MarkerInput) {
   return apiClient.put<Marker>(`/markers/${id}`, input).then((res) => res.data);
 }
+
+export function deleteMarker(id: string) {
+  return apiClient.delete(`/markers/${id}`).then(() => undefined);
+}

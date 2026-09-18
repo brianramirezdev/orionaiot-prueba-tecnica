@@ -3,7 +3,7 @@ import { Alert, Box, CircularProgress, Fab, Paper, Typography } from "@mui/mater
 import AddIcon from "@mui/icons-material/Add";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { Map, MapControls, MapMarker, MarkerContent, MarkerPopup } from "@/components/ui/map";
-import { createMarker, getMarkers, updateMarker, type MarkerInput } from "@/api/markers";
+import { createMarker, deleteMarker, getMarkers, updateMarker, type MarkerInput } from "@/api/markers";
 import type { Marker } from "@/api/types";
 import { MarkerFormDialog } from "./MarkerFormDialog";
 
@@ -55,6 +55,13 @@ export default function ProyectosPage() {
         ? list.map((marker) => (marker.id === saved.id ? saved : marker))
         : [...list, saved];
     });
+    setDialogOpen(false);
+  }
+
+  async function handleDelete() {
+    if (!editingMarker) return;
+    await deleteMarker(editingMarker.id);
+    setMarkers((current) => (current ?? []).filter((marker) => marker.id !== editingMarker.id));
     setDialogOpen(false);
   }
 
@@ -115,6 +122,7 @@ export default function ProyectosPage() {
         marker={editingMarker}
         onClose={() => setDialogOpen(false)}
         onSubmit={handleSubmit}
+        onDelete={editingMarker ? handleDelete : undefined}
       />
     </>
   );

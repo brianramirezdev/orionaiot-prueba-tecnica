@@ -8,6 +8,7 @@ import {
   DialogTitle,
   Stack,
   TextField,
+  Typography,
 } from "@mui/material";
 import type { Marker } from "@/api/types";
 import type { MarkerInput } from "@/api/markers";
@@ -18,18 +19,23 @@ type Props = {
   marker: Marker | null;
   onClose: () => void;
   onSubmit: (input: MarkerInput) => Promise<void>;
+  /** Solo se pasa en modo edición: permite borrar el marcador que se está editando. */
+  onDelete?: () => Promise<void>;
 };
 
 const EMPTY_FORM = { description: "", lat: "", lng: "" };
 
-export function MarkerFormDialog({ open, marker, onClose, onSubmit }: Props) {
+export function MarkerFormDialog({ open, marker, onClose, onSubmit, onDelete }: Props) {
   const [form, setForm] = useState(EMPTY_FORM);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (!open) return;
     setError(null);
+    setConfirmingDelete(false);
     setForm(
       marker
         ? { description: marker.description, lat: String(marker.lat), lng: String(marker.lng) }
@@ -54,6 +60,20 @@ export function MarkerFormDialog({ open, marker, onClose, onSubmit }: Props) {
       setError("No se pudo guardar el marcador. Intenta nuevamente.");
     } finally {
       setIsSubmitting(false);
+    }
+  }
+
+  async function handleDelete() {
+    if (!onDelete) return;
+    setError(null);
+    setIsDeleting(true);
+    try {
+      await onDelete();
+    } catch {
+      setError("No se pudo eliminar el marcador. Intenta nuevamente.");
+      setConfirmingDelete(false);
+    } finally {
+      setIsDeleting(false);
     }
   }
 
@@ -83,14 +103,34 @@ export function MarkerFormDialog({ open, marker, onClose, onSubmit }: Props) {
             fullWidth
           />
         </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={onClose} disabled={isSubmitting}>
-            Cancelar
-          </Button>
-          <Button type="submit" variant="contained" disabled={isSubmitting}>
-            Guardar
-          </Button>
-        </DialogActions>
+
+        {confirmingDelete ? (
+          <DialogActions sx={{ px: 3, pb: 2 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ mr: "auto" }}>
+              ¿Eliminar este marcador?
+            </Typography>
+            <Button onClick={() => setConfirmingDelete(false)} disabled={isDeleting}>
+              Cancelar
+            </Button>
+            <Button color="error" variant="contained" onClick={handleDelete} disabled={isDeleting}>
+              {isDeleting ? "Eliminando..." : "Sí, eliminar"}
+            </Button>
+          </DialogActions>
+        ) : (
+          <DialogActions sx={{ px: 3, pb: 2 }}>
+            {marker && onDelete && (
+              <Button color="error" onClick={() => setConfirmingDelete(true)} disabled={isSubmitting} sx={{ mr: "auto" }}>
+                Eliminar
+              </Button>
+            )}
+            <Button onClick={onClose} disabled={isSubmitting}>
+              Cancelar
+            </Button>
+            <Button type="submit" variant="contained" disabled={isSubmitting}>
+              Guardar
+            </Button>
+          </DialogActions>
+        )}
       </Stack>
     </Dialog>
   );

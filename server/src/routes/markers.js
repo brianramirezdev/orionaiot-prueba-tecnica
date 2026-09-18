@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createMarker, listMarkers, updateMarker } from "../data/markers.js";
+import { createMarker, deleteMarker, listMarkers, updateMarker } from "../data/markers.js";
 
 export const markersRouter = Router();
 
@@ -42,4 +42,10 @@ markersRouter.put("/:id", (req, res) => {
 
   if (!marker) return res.status(404).json({ message: "Marcador no encontrado." });
   res.json(marker);
+});
+
+markersRouter.delete("/:id", (req, res) => {
+  const deleted = deleteMarker(req.params.id);
+  if (!deleted) return res.status(404).json({ message: "Marcador no encontrado." });
+  res.status(204).send();
 });

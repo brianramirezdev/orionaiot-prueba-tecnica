@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Alert, Box, CircularProgress, Fab, Paper, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { Map, MapControls, MapMarker, MarkerContent, MarkerPopup } from "@/components/ui/map";
 import { createMarker, getMarkers, updateMarker, type MarkerInput } from "@/api/markers";
 import type { Marker } from "@/api/types";
@@ -8,6 +9,18 @@ import { MarkerFormDialog } from "./MarkerFormDialog";
 
 // Bogotá D.C., centrado sobre los proyectos de ejemplo cargados en el backend.
 const MAP_CENTER: [number, number] = [-74.08, 4.66];
+
+function MarkerPin() {
+  return (
+    <LocationOnIcon
+      sx={{
+        color: "error.main",
+        fontSize: 40,
+        filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.5))",
+      }}
+    />
+  );
+}
 
 export default function ProyectosPage() {
   const [markers, setMarkers] = useState<Marker[] | null>(null);
@@ -67,8 +80,10 @@ export default function ProyectosPage() {
           <Map center={MAP_CENTER} zoom={11}>
             <MapControls showZoom showFullscreen />
             {markers.map((marker) => (
-              <MapMarker key={marker.id} longitude={marker.lng} latitude={marker.lat}>
-                <MarkerContent />
+              <MapMarker key={marker.id} longitude={marker.lng} latitude={marker.lat} anchor="bottom">
+                <MarkerContent>
+                  <MarkerPin />
+                </MarkerContent>
                 <MarkerPopup>
                   <Typography variant="subtitle2">{marker.description}</Typography>
                   <Typography

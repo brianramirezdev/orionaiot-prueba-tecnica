@@ -1,0 +1,11 @@
+# Dependencias y builds (cada subproyecto tiene su propio .gitignore también)
+node_modules
+dist
+dist-ssr
+
+# Herramientas locales de desarrollo, no forman parte del proyecto
+.claude
+.remember
+
+*.log
+.DS_Store
